@@ -35,6 +35,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const API_BASE_URL = 'https://barberia-back.vercel.app/api';
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -52,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const response = await axios.get('https://barberia-back.vercel.app/api/users/me', {
+      const response = await axios.get(`${API_BASE_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -67,7 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('https://barberia-back.vercel.app/api/users/login', {
+      const response = await axios.post(`${API_BASE_URL}/users/login`, {
         email,
         password
       });
@@ -82,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      const response = await axios.post('https://barberia-back.vercel.app/api/users/register', {
+      const response = await axios.post(`${API_BASE_URL}/users/register`, {
         name,
         email,
         password
