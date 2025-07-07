@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 const api: AxiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://barberia-back.vercel.app/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://barberia-back-czcflkyyt-juan-davids-projects-3cf28ed7.vercel.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
