@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar } from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useAuth } from '../context/AuthContext';
@@ -17,8 +15,8 @@ interface Appointment {
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const [date, setDate] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedService, setSelectedService] = useState('');
   const [selectedBarber, setSelectedBarber] = useState('');
@@ -58,10 +56,10 @@ const Dashboard: React.FC = () => {
     fetchAppointments();
   }, []);
 
-  const handleDateChange = (newDate: Date) => {
-    setDate(newDate);
+  const handleDateChange = (newDate: string) => {
+    setSelectedDate(newDate);
     // Aquí cargarías las citas para la fecha seleccionada
-    fetchAppointments(newDate);
+    fetchAppointments(new Date(newDate));
   };
 
   const fetchAppointments = async (selectedDate: Date) => {
@@ -81,7 +79,7 @@ const Dashboard: React.FC = () => {
     e.preventDefault();
     try {
       const response = await api.post('/appointments', {
-        date: format(date, 'yyyy-MM-dd'),
+        date: selectedDate,
         time: selectedTime,
         service: selectedService,
         barber: selectedBarber,
@@ -137,6 +135,16 @@ const Dashboard: React.FC = () => {
         )}
 
         <div className="mt-12">
+          <div className="bg-white shadow rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Seleccionar Fecha</h3>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => handleDateChange(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <ul className="divide-y divide-gray-200">
               {appointments.length === 0 ? (
