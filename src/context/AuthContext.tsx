@@ -23,7 +23,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .then(response => {
           setUser(response.data);
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error('Error loading user profile:', error);
           localStorage.removeItem('token');
         })
         .finally(() => {
@@ -35,14 +36,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
+    const response = await api.post('/users/login', { email, password });
     const { token, user } = response.data;
     localStorage.setItem('token', token);
     setUser(user);
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const response = await api.post('/auth/register', { name, email, password });
+    const response = await api.post('/users/register', { name, email, password });
     const { token, user } = response.data;
     localStorage.setItem('token', token);
     setUser(user);
