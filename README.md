@@ -37,7 +37,12 @@ cp .env.example .env
 
 4. Configura las variables de entorno en el archivo `.env`:
 ```
-REACT_APP_API_URL=http://localhost:5000/api
+# Desarrollo local
+REACT_APP_API_URL=http://localhost:4000/api
+
+# Producción (Vercel)
+# REACT_APP_API_URL=https://barberia-back.vercel.app/api
+
 REACT_APP_NAME=Barbería
 REACT_APP_DESCRIPTION=Sistema de gestión de citas para barbería
 ```
