@@ -1,52 +1,99 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, AuthContextType } from '../types';
-import api from '../config/api';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import axios from 'axios';
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      api.get('/users/profile')
-        .then(response => {
-          setUser(response.data);
-        })
-        .catch((error) => {
-          console.error('Error loading user profile:', error);
-          localStorage.removeItem('token');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      checkAuthStatus();
     } else {
       setLoading(false);
     }
   }, []);
 
+  const checkAuthStatus = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get('https://barberia-back.vercel.app/api/users/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setUser(response.data);
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      localStorage.removeItem('token');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const login = async (email: string, password: string) => {
-    const response = await api.post('/users/login', { email, password });
-    const { token, user } = response.data;
-    localStorage.setItem('token', token);
-    setUser(user);
+    try {
+      const response = await axios.post('https://barberia-back.vercel.app/api/users/login', {
+        email,
+        password
+      });
+      
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      setUser(user);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
+    }
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const response = await api.post('/users/register', { name, email, password });
-    const { token, user } = response.data;
-    localStorage.setItem('token', token);
-    setUser(user);
+    try {
+      const response = await axios.post('https://barberia-back.vercel.app/api/users/register', {
+        name,
+        email,
+        password
+      });
+      
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      setUser(user);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al registrarse');
+    }
   };
 
   const logout = () => {
@@ -60,6 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
+    isAuthenticated: !!user
   };
 
   return (
