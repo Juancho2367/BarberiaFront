@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { format } from 'date-fns';
+import api from '../config/api';
+import { Service, Barber } from '../types';
 
-interface Service {
-  id: string;
-  name: string;
-  duration: number;
-  price: number;
-}
 
-interface Barber {
-  id: string;
-  name: string;
-}
 
 interface AppointmentFormProps {
   selectedDate: Date;
@@ -42,7 +33,7 @@ export default function AppointmentForm({ selectedDate, onSuccess }: Appointment
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/services');
+      const response = await api.get('/services');
       setServices(response.data);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -51,7 +42,7 @@ export default function AppointmentForm({ selectedDate, onSuccess }: Appointment
 
   const fetchBarbers = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/barbers');
+      const response = await api.get('/barbers');
       setBarbers(response.data);
     } catch (error) {
       console.error('Error fetching barbers:', error);
@@ -60,7 +51,7 @@ export default function AppointmentForm({ selectedDate, onSuccess }: Appointment
 
   const fetchAvailableSlots = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/appointments/available-slots', {
+      const response = await api.get('/appointments/available-slots', {
         params: {
           barberId: selectedBarber,
           date: selectedDate.toISOString()
@@ -83,15 +74,11 @@ export default function AppointmentForm({ selectedDate, onSuccess }: Appointment
     setError('');
 
     try {
-      await axios.post('http://localhost:4000/api/appointments', {
+      await api.post('/appointments', {
         service: selectedService,
         barberId: selectedBarber,
         date: selectedSlot,
         duration: services.find(s => s.id === selectedService)?.duration || 30
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
       });
 
       onSuccess();
