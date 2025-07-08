@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -13,37 +12,51 @@ import PrivateRoute from './components/PrivateRoute';
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="container mx-auto px-4 py-8">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
-                  path="/profile" 
-                  element={
-                    <PrivateRoute>
-                      <Profile />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
-          </div>
-        </Router>
-      </AuthProvider>
+      <div className="min-h-screen bg-gray-50">
+        <ErrorBoundary>
+          <Navbar />
+        </ErrorBoundary>
+        <main className="container mx-auto px-4 py-8">
+          <Routes>
+            <Route path="/" element={
+              <ErrorBoundary>
+                <Home />
+              </ErrorBoundary>
+            } />
+            <Route path="/login" element={
+              <ErrorBoundary>
+                <Login />
+              </ErrorBoundary>
+            } />
+            <Route path="/register" element={
+              <ErrorBoundary>
+                <Register />
+              </ErrorBoundary>
+            } />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ErrorBoundary>
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                </ErrorBoundary>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ErrorBoundary>
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                </ErrorBoundary>
+              } 
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+      </div>
     </ErrorBoundary>
   );
 }
