@@ -59,10 +59,10 @@ const Dashboard: React.FC = () => {
   const handleDateChange = (newDate: string) => {
     setSelectedDate(newDate);
     // Aquí cargarías las citas para la fecha seleccionada
-    fetchAppointments(new Date(newDate));
+    fetchAppointmentsForDate(new Date(newDate));
   };
 
-  const fetchAppointments = async (selectedDate: Date) => {
+  const fetchAppointmentsForDate = async (selectedDate: Date) => {
     try {
       const response = await api.get('/appointments', {
         params: {

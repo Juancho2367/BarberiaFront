@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import api from '../config/api';
 
 interface User {
   _id: string;
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'https://barberia-back.vercel.app/api';
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -54,9 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const response = await axios.get(`${API_BASE_URL}/users/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/users/me');
       
       setUser(response.data);
     } catch (error) {
@@ -69,7 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/users/login`, {
+      const response = await api.post('/users/login', {
         email,
         password
       });
@@ -84,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/users/register`, {
+      const response = await api.post('/users/register', {
         name,
         email,
         password
