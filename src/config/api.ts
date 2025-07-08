@@ -1,12 +1,13 @@
 import axios from 'axios';
-import config from './environment';
 
 const api = axios.create({
-  baseURL: config.apiUrl,
+  baseURL: process.env.REACT_APP_API_URL || 'https://barberia-back.vercel.app/api',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  withCredentials: false // Cambiar a false para evitar problemas CORS
 });
 
 // Interceptor para agregar token de autenticación

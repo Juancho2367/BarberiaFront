@@ -3,13 +3,9 @@ import { Dialog } from '@headlessui/react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import api from '../config/api';
+import { AppointmentModalProps } from '../types';
 
-interface AppointmentModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  selectedDate: Date;
-  onAppointmentCreated: () => void;
-}
+
 
 interface AppointmentForm {
   time: string;
@@ -64,7 +60,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setLoading(true);
 
     try {
-      await api.post('/appointments', {
+      await api.post('/api/appointments', {
         date: format(selectedDate, 'yyyy-MM-dd'),
         ...formData,
       });

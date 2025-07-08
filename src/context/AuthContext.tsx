@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const response = await api.get('/users/me');
+      const response = await api.get('/api/users/me');
       
       setUser(response.data);
     } catch (error) {
@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await api.post('/users/login', {
+      const response = await api.post('/api/users/login', {
         email,
         password
       });
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      const response = await api.post('/users/register', {
+      const response = await api.post('/api/users/register', {
         name,
         email,
         password

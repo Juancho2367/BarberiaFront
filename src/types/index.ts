@@ -21,17 +21,7 @@ export interface Appointment {
   updatedAt: string;
 }
 
-export interface Service {
-  id: string;
-  name: string;
-  duration: number;
-  price: number;
-}
 
-export interface Barber {
-  id: string;
-  name: string;
-}
 
 export interface LoginForm {
   email: string;
@@ -53,29 +43,16 @@ export interface UserProfile {
   appointments: Appointment[];
 }
 
-export interface AppointmentForm {
-  service: string;
-  barberId: string;
-  date: Date;
-  duration: number;
-  notes?: string;
-}
-
 // Tipos para props de componentes
 export interface PrivateRouteProps {
   children: React.ReactNode;
-}
-
-export interface AppointmentFormProps {
-  selectedDate: Date;
-  onSuccess: () => void;
 }
 
 export interface AppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate: Date;
-  onSuccess: () => void;
+  onAppointmentCreated: () => void;
 }
 
 // Tipos para contexto de autenticación

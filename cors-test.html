@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba CORS</title>
+</head>
+<body>
+    <h1>Prueba de CORS y Rutas</h1>
+    <button onclick="testCORS()">Probar CORS GET</button>
+    <button onclick="testCORSPost()">Probar CORS POST</button>
+    <button onclick="testRoutes()">Probar Rutas Disponibles</button>
+    <button onclick="testRegister()">Probar Registro</button>
+    <div id="result"></div>
+
+    <script>
+        async function testCORS() {
+            try {
+                const response = await fetch('https://barberia-back.vercel.app/api/cors-test', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `<pre>GET Success: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<pre>GET Error: ${error.message}</pre>`;
+            }
+        }
+
+        async function testCORSPost() {
+            try {
+                const response = await fetch('https://barberia-back.vercel.app/api/cors-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ test: 'data' })
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `<pre>POST Success: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<pre>POST Error: ${error.message}</pre>`;
+            }
+        }
+
+        async function testRegister() {
+            try {
+                const response = await fetch('https://barberia-back.vercel.app/api/users/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        email: 'test@example.com',
+                        password: '123456'
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `<pre>Register Success: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<pre>Register Error: ${error.message}</pre>`;
+            }
+        }
+
+        async function testRoutes() {
+            try {
+                const response = await fetch('https://barberia-back.vercel.app/api/routes-test', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `<pre>Routes Test: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<pre>Routes Error: ${error.message}</pre>`;
+            }
+        }
+    </script>
+</body>
+</html> 
