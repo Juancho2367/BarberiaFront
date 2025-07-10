@@ -20,6 +20,24 @@ const Register: React.FC = () => {
   });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [passwordError, setPasswordError] = useState<string>('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
+
+  const validatePassword = (password: string): string => {
+    if (password.length < 6) {
+      return 'La contraseña debe tener al menos 6 caracteres';
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      return 'La contraseña debe contener al menos una letra minúscula';
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      return 'La contraseña debe contener al menos una letra mayúscula';
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      return 'La contraseña debe contener al menos un número';
+    }
+    return '';
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,16 +45,46 @@ const Register: React.FC = () => {
       ...prev,
       [name]: value
     }));
+
+    // Validación en tiempo real
+    if (name === 'password') {
+      const error = validatePassword(value);
+      setPasswordError(error);
+      
+      // Validar confirmación de contraseña si ya hay valor
+      if (formData.confirmPassword) {
+        setConfirmPasswordError(
+          value !== formData.confirmPassword ? 'Las contraseñas no coinciden' : ''
+        );
+      }
+    }
+
+    if (name === 'confirmPassword') {
+      setConfirmPasswordError(
+        value !== formData.password ? 'Las contraseñas no coinciden' : ''
+      );
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden');
+    // Validar contraseña antes de enviar
+    const passwordValidationError = validatePassword(formData.password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
       return;
     }
+
+    if (formData.password !== formData.confirmPassword) {
+      setConfirmPasswordError('Las contraseñas no coinciden');
+      return;
+    }
+
+    // Limpiar errores de validación
+    setPasswordError('');
+    setConfirmPasswordError('');
 
     setLoading(true);
 
@@ -114,8 +162,36 @@ const Register: React.FC = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    passwordError 
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-primary-500 focus:border-primary-500'
+                  }`}
                 />
+                {passwordError && (
+                  <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+                )}
+                {formData.password && !passwordError && (
+                  <div className="mt-1">
+                    <div className="flex space-x-1">
+                      <div className={`h-1 flex-1 rounded ${
+                        formData.password.length >= 6 ? 'bg-green-500' : 'bg-gray-300'
+                      }`}></div>
+                      <div className={`h-1 flex-1 rounded ${
+                        /(?=.*[a-z])/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'
+                      }`}></div>
+                      <div className={`h-1 flex-1 rounded ${
+                        /(?=.*[A-Z])/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'
+                      }`}></div>
+                      <div className={`h-1 flex-1 rounded ${
+                        /(?=.*\d)/.test(formData.password) ? 'bg-green-500' : 'bg-gray-300'
+                      }`}></div>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula y un número
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -131,8 +207,15 @@ const Register: React.FC = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    confirmPasswordError 
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-primary-500 focus:border-primary-500'
+                  }`}
                 />
+                {confirmPasswordError && (
+                  <p className="mt-1 text-sm text-red-600">{confirmPasswordError}</p>
+                )}
               </div>
             </div>
 
