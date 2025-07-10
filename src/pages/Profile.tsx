@@ -44,7 +44,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await api.get('/api/users/profile');
+        const response = await api.get('/users/profile');
         setProfile(response.data);
       } catch (err) {
         setError('Error al cargar el perfil');
@@ -60,7 +60,7 @@ const Profile: React.FC = () => {
 
   const fetchAppointments = async () => {
     try {
-              const response = await api.get('/api/appointments/my-appointments');
+              const response = await api.get('/appointments/my-appointments');
       setAppointments(response.data);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -82,7 +82,7 @@ const Profile: React.FC = () => {
     setSuccess('');
 
     try {
-              await api.put('/api/users/profile', profile);
+              await api.put('/users/profile', profile);
       setSuccess('Perfil actualizado correctamente');
     } catch (err) {
       setError('Error al actualizar el perfil');

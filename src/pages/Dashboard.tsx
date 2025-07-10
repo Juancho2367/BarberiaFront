@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await api.get('/api/appointments');
+        const response = await api.get('/appointments');
         setAppointments(response.data);
       } catch (err) {
         setError('Error al cargar las citas');
@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
 
   const fetchAppointmentsForDate = async (selectedDate: Date) => {
     try {
-      const response = await api.get('/api/appointments', {
+              const response = await api.get('/appointments', {
         params: {
           date: format(selectedDate, 'yyyy-MM-dd'),
         },
@@ -78,7 +78,7 @@ const Dashboard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.post('/api/appointments', {
+              const response = await api.post('/appointments', {
         date: selectedDate,
         time: selectedTime,
         service: selectedService,

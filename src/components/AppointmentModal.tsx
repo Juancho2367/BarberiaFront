@@ -60,7 +60,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setLoading(true);
 
     try {
-      await api.post('/api/appointments', {
+              await api.post('/appointments', {
         date: format(selectedDate, 'yyyy-MM-dd'),
         ...formData,
       });
