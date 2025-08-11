@@ -82,20 +82,20 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
       <div className="flex items-center justify-center min-h-screen">
         <div className="fixed inset-0 bg-black opacity-30" />
 
-        <div className="relative bg-white rounded-lg max-w-md w-full mx-4 p-6">
-          <Dialog.Title className="text-lg font-medium text-gray-900 mb-4">
+        <div className="relative card rounded-lg max-w-md w-full mx-4 p-6">
+          <Dialog.Title className="text-lg font-medium mb-4" style={{ color: 'var(--color-texto-principal)', fontFamily: 'var(--fuente-titulos)' }}>
             Nueva Cita - {format(selectedDate, "PPP", { locale: es })}
           </Dialog.Title>
 
           {error && (
-            <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="mb-4 bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="time" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="time" className="label">
                 Hora
               </label>
               <select
@@ -104,7 +104,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 value={formData.time}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                className="input mt-1"
               >
                 <option value="">Seleccione una hora</option>
                 {timeSlots.map(time => (
@@ -116,7 +116,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="service" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="service" className="label">
                 Servicio
               </label>
               <select
@@ -125,7 +125,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 value={formData.service}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                className="input mt-1"
               >
                 <option value="">Seleccione un servicio</option>
                 {services.map(service => (
@@ -137,7 +137,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="barber" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="barber" className="label">
                 Barbero
               </label>
               <select
@@ -146,7 +146,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 value={formData.barber}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                className="input mt-1"
               >
                 <option value="">Seleccione un barbero</option>
                 {barbers.map(barber => (
@@ -158,7 +158,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="notes" className="label">
                 Notas (opcional)
               </label>
               <textarea
@@ -167,7 +167,8 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                className="input mt-1"
+                style={{ resize: 'vertical' }}
               />
             </div>
 
@@ -175,14 +176,14 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="btn btn-secondary"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+                className="btn btn-primary disabled:opacity-50"
               >
                 {loading ? 'Creando...' : 'Crear Cita'}
               </button>

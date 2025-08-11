@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { getConfig } from './environment';
 
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://barberia-back.vercel.app/api';
+const config = getConfig();
+const API_BASE_URL = process.env.REACT_APP_API_URL || config.API_URL;
 const API_TIMEOUT = 15000;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 

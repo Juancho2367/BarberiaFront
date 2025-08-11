@@ -1,10 +1,19 @@
 // Tipos centralizados para toda la aplicación
 
+export interface ServicePrices {
+  haircut: number;
+  haircutWithBeard: number;
+}
+
 export interface User {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
   role: 'client' | 'barber' | 'admin';
+  servicePrices?: ServicePrices;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Appointment {

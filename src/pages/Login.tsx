@@ -41,24 +41,25 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen admin-panel flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold"
+            style={{ color: 'var(--color-texto-principal)', fontFamily: 'var(--fuente-titulos)' }}>
           Iniciar Sesión
         </h2>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="card py-6 sm:py-8 px-4 sm:px-10">
           {error && (
-            <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="mb-4 bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded text-sm">
               {error}
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="label">
                 Correo electrónico
               </label>
               <div className="mt-1">
@@ -70,13 +71,14 @@ const Login: React.FC = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="input"
+                  placeholder="tu@email.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="label">
                 Contraseña
               </label>
               <div className="mt-1">
@@ -88,7 +90,8 @@ const Login: React.FC = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="input"
+                  placeholder="Tu contraseña"
                 />
               </div>
             </div>
@@ -97,7 +100,7 @@ const Login: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+                className="btn btn-primary w-full flex justify-center disabled:opacity-50"
               >
                 {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </button>
@@ -107,9 +110,14 @@ const Login: React.FC = () => {
           <div className="mt-6">
             <div className="relative">
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
+                <span className="px-2 text-center" 
+                      style={{ backgroundColor: 'var(--color-card-bg)', color: 'var(--color-texto-secundario)' }}>
                   ¿No tienes una cuenta?{' '}
-                  <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
+                  <Link to="/register" 
+                        className="font-medium"
+                        style={{ color: 'var(--color-acento-dorado)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-acento-dorado-hover)'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-acento-dorado)'}>
                     Regístrate
                   </Link>
                 </span>

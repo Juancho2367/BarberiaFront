@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useAuth } from '../context/AuthContext';
 import api from '../config/api';
+import WeeklyCalendar from '../components/WeeklyCalendar';
+import AdminCalendar from '../components/AdminCalendar';
 
 interface Appointment {
   _id: string;
@@ -106,10 +108,12 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen admin-panel py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-900">Cargando...</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold" style={{ color: 'var(--color-texto-principal)' }}>
+              Cargando...
+            </h2>
           </div>
         </div>
       </div>
@@ -117,67 +121,73 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+    <div className="min-h-screen admin-panel">
+      <div className="dashboard-content">
+        <div className="text-center px-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl" style={{ fontFamily: 'var(--fuente-titulos)', color: 'var(--color-texto-principal)' }}>
             Bienvenido, {user?.name}
-          </h2>
-          <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+          </h1>
+          <p className="mt-3 max-w-2xl mx-auto text-lg sm:text-xl px-4" 
+             style={{ color: 'var(--color-texto-secundario)', fontFamily: 'var(--fuente-cuerpo)' }}>
             Aquí puedes gestionar tus citas
           </p>
         </div>
 
         {error && (
-          <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="mt-4 mx-4 sm:mx-0 bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded">
             {error}
           </div>
         )}
 
-        <div className="mt-12">
-          <div className="bg-white shadow rounded-lg p-6 mb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Seleccionar Fecha</h3>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => handleDateChange(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <div className="mt-8 sm:mt-12 px-4 sm:px-0">
+          {/* Calendario según el rol del usuario */}
+          {user?.role === 'admin' ? (
+            <AdminCalendar />
+          ) : (
+            <WeeklyCalendar />
+          )}
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul className="divide-y divide-gray-200">
-              {appointments.length === 0 ? (
-                <li className="px-6 py-4 text-center text-gray-500">
-                  No tienes citas programadas
-                </li>
-              ) : (
-                appointments.map((appointment) => (
-                  <li key={appointment._id} className="px-6 py-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {new Date(appointment.date).toLocaleDateString()} - {appointment.time}
-                        </p>
-                        <p className="text-sm text-gray-500">{appointment.service}</p>
-                        <p className="text-sm text-gray-500">
-                          Estado: {appointment.status}
-                        </p>
-                      </div>
-                      {appointment.status === 'pending' && (
-                        <button
-                          onClick={() => handleCancelAppointment(appointment._id)}
-                          className="ml-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-                        >
-                          Cancelar
-                        </button>
-                      )}
+          {/* Lista de Citas (solo para usuarios no-admin) */}
+          {user?.role !== 'admin' && (
+            <div className="mt-8">
+              <div className="card">
+                <h3 className="card-title text-lg sm:text-xl">Tus Citas Programadas</h3>
+                <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
+                  {appointments.length === 0 ? (
+                    <div className="no-appointments-card px-4 sm:px-6 py-4 text-center">
+                      <p className="text-sm sm:text-base">No tienes citas programadas</p>
                     </div>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
+                  ) : (
+                    appointments.map((appointment) => (
+                      <div key={appointment._id} className="px-4 sm:px-6 py-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium" style={{ color: 'var(--color-texto-principal)' }}>
+                              {new Date(appointment.date).toLocaleDateString()} - {appointment.time}
+                            </p>
+                            <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
+                              {appointment.service}
+                            </p>
+                            <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
+                              Estado: {appointment.status}
+                            </p>
+                          </div>
+                          {appointment.status === 'pending' && (
+                            <button
+                              onClick={() => handleCancelAppointment(appointment._id)}
+                              className="btn-danger w-full sm:w-auto sm:ml-4"
+                            >
+                              Cancelar
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

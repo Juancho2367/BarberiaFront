@@ -102,10 +102,10 @@ const Profile: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen admin-panel py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-900">Cargando...</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold" style={{ color: 'var(--color-texto-principal)' }}>Cargando...</h2>
           </div>
         </div>
       </div>
@@ -113,35 +113,36 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+    <div className="min-h-screen admin-panel">
+      <div className="dashboard-content">
+        <div className="text-center px-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl" style={{ fontFamily: 'var(--fuente-titulos)', color: 'var(--color-texto-principal)' }}>
             Mi Perfil
-          </h2>
-          <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+          </h1>
+          <p className="mt-3 max-w-2xl mx-auto text-lg sm:text-xl px-4" 
+             style={{ color: 'var(--color-texto-secundario)', fontFamily: 'var(--fuente-cuerpo)' }}>
             Actualiza tu información personal
           </p>
         </div>
 
         {error && (
-          <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="mt-4 mx-4 sm:mx-0 bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          <div className="mt-4 mx-4 sm:mx-0 bg-green-900 border border-green-700 text-green-100 px-4 py-3 rounded">
             {success}
           </div>
         )}
 
-        <div className="mt-12">
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="mt-8 sm:mt-12 px-4 sm:px-0">
+          <div className="card">
             <div className="px-4 py-5 sm:p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="name" className="label">
                     Nombre completo
                   </label>
                   <div className="mt-1">
@@ -152,13 +153,13 @@ const Profile: React.FC = () => {
                       value={profile.name}
                       onChange={handleChange}
                       required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="input"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="email" className="label">
                     Correo electrónico
                   </label>
                   <div className="mt-1">
@@ -169,13 +170,13 @@ const Profile: React.FC = () => {
                       value={profile.email}
                       onChange={handleChange}
                       required
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="input"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="phone" className="label">
                     Teléfono
                   </label>
                   <div className="mt-1">
@@ -185,13 +186,13 @@ const Profile: React.FC = () => {
                       id="phone"
                       value={profile.phone}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="input"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="address" className="label">
                     Dirección
                   </label>
                   <div className="mt-1">
@@ -201,7 +202,7 @@ const Profile: React.FC = () => {
                       id="address"
                       value={profile.address}
                       onChange={handleChange}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="input"
                     />
                   </div>
                 </div>
@@ -209,7 +210,7 @@ const Profile: React.FC = () => {
                 <div>
                   <button
                     type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                    className="btn btn-primary w-full flex justify-center"
                   >
                     Actualizar Perfil
                   </button>
@@ -220,32 +221,32 @@ const Profile: React.FC = () => {
         </div>
 
         {/* User Profile Section */}
-        <div className="bg-white shadow rounded-lg p-6 mb-6 mt-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Perfil de Usuario</h2>
+        <div className="card mt-6 mx-4 sm:mx-0">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4" style={{ color: 'var(--color-texto-principal)', fontFamily: 'var(--fuente-titulos)' }}>Perfil de Usuario</h2>
           {user && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Nombre</h3>
-                <p className="mt-1">{user.name}</p>
+                <h3 className="text-sm font-medium" style={{ color: 'var(--color-texto-secundario)' }}>Nombre</h3>
+                <p className="mt-1" style={{ color: 'var(--color-texto-principal)' }}>{user.name}</p>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Email</h3>
-                <p className="mt-1">{user.email}</p>
+                <h3 className="text-sm font-medium" style={{ color: 'var(--color-texto-secundario)' }}>Email</h3>
+                <p className="mt-1" style={{ color: 'var(--color-texto-principal)' }}>{user.email}</p>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Rol</h3>
-                <p className="mt-1 capitalize">{user.role}</p>
+                <h3 className="text-sm font-medium" style={{ color: 'var(--color-texto-secundario)' }}>Rol</h3>
+                <p className="mt-1 capitalize" style={{ color: 'var(--color-texto-principal)' }}>{user.role}</p>
               </div>
             </div>
           )}
         </div>
 
         {/* Appointments Section */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Mis Citas</h2>
+        <div className="card mx-4 sm:mx-0">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4" style={{ color: 'var(--color-texto-principal)', fontFamily: 'var(--fuente-titulos)' }}>Mis Citas</h2>
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
-              <p className="text-red-700">{error}</p>
+            <div className="bg-red-900 border-l-4 border-red-700 p-4 mb-4">
+              <p style={{ color: 'var(--color-texto-principal)' }}>{error}</p>
             </div>
           )}
           <div className="space-y-4">
@@ -253,28 +254,29 @@ const Profile: React.FC = () => {
               <div
                 key={appointment._id}
                 className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                style={{ borderColor: 'var(--color-border)' }}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
+                  <div className="flex-1">
+                    <h3 className="text-base sm:text-lg font-medium" style={{ color: 'var(--color-texto-principal)' }}>
                       {appointment.service}
                     </h3>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
                       {format(new Date(appointment.date), "PPP 'a las' HH:mm", { locale: es })}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
                       Duración: {appointment.duration} minutos
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
                       {user?.role === 'client' ? 'Barbero' : 'Cliente'}:{' '}
                       {user?.role === 'client'
                         ? appointment.barber.name
                         : appointment.client.name}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                     <span
-                      className={`px-2 py-1 text-xs rounded-full ${
+                      className={`px-2 py-1 text-xs rounded-full text-center ${
                         appointment.status === 'confirmed'
                           ? 'bg-green-100 text-green-800'
                           : appointment.status === 'pending'
@@ -292,7 +294,7 @@ const Profile: React.FC = () => {
                     {appointment.status === 'pending' && (
                       <button
                         onClick={() => handleCancelAppointment(appointment._id)}
-                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                        className="btn-danger text-sm w-full sm:w-auto"
                       >
                         Cancelar
                       </button>
@@ -302,7 +304,7 @@ const Profile: React.FC = () => {
               </div>
             ))}
             {appointments.length === 0 && (
-              <p className="text-gray-500 text-center py-4">
+              <p className="text-center py-4" style={{ color: 'var(--color-texto-secundario)' }}>
                 No tienes citas programadas
               </p>
             )}

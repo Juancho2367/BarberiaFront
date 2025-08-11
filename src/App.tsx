@@ -7,16 +7,17 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import UserManagement from './pages/UserManagement';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--color-fondo-oscuro)', fontFamily: 'var(--fuente-cuerpo)' }}>
         <ErrorBoundary>
           <Navbar />
         </ErrorBoundary>
-        <main className="container mx-auto px-4 py-8">
+        <main>
           <Routes>
             <Route path="/" element={
               <ErrorBoundary>
@@ -49,6 +50,16 @@ function App() {
                 <ErrorBoundary>
                   <PrivateRoute>
                     <Profile />
+                  </PrivateRoute>
+                </ErrorBoundary>
+              } 
+            />
+            <Route 
+              path="/user-management" 
+              element={
+                <ErrorBoundary>
+                  <PrivateRoute>
+                    <UserManagement />
                   </PrivateRoute>
                 </ErrorBoundary>
               } 
