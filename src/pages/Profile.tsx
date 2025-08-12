@@ -3,18 +3,20 @@ import { useAuth } from '../context/AuthContext';
 import api from '../config/api';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { User, Mail, Phone, MapPin, Edit3, Save, X, Calendar, Clock, Scissors, Check, Star } from 'lucide-react';
+import './Profile.css';
 
 interface Appointment {
   _id: string;
-  service: string;
   date: string;
-  duration: number;
+  time: string;
+  service: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  client: {
+  client?: {
     name: string;
     email: string;
   };
-  barber: {
+  barber?: {
     name: string;
     email: string;
   };
@@ -30,7 +32,14 @@ interface UserProfile {
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
+    name: '',
+    email: '',
+    phone: '',
+    address: ''
+  });
+  const [editData, setEditData] = useState<UserProfile>({
     name: '',
     email: '',
     phone: '',
@@ -46,6 +55,7 @@ const Profile: React.FC = () => {
       try {
         const response = await api.get('/users/profile');
         setProfile(response.data);
+        setEditData(response.data);
       } catch (err) {
         setError('Error al cargar el perfil');
         console.error(err);
@@ -60,7 +70,7 @@ const Profile: React.FC = () => {
 
   const fetchAppointments = async () => {
     try {
-              const response = await api.get('/appointments/my-appointments');
+      const response = await api.get('/appointments/my-appointments');
       setAppointments(response.data);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -68,247 +78,337 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setProfile(prev => ({
+  const handleInputChange = (field: keyof UserProfile, value: string) => {
+    setEditData(prev => ({
       ...prev,
-      [name]: value
+      [field]: value
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
     setError('');
     setSuccess('');
 
     try {
-              await api.put('/users/profile', profile);
+      await api.put('/users/profile', editData);
+      setProfile({ ...editData });
       setSuccess('Perfil actualizado correctamente');
+      setIsEditing(false);
+      
+      // Limpiar mensaje de éxito después de 3 segundos
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError('Error al actualizar el perfil');
       console.error(err);
     }
   };
 
+  const handleCancel = () => {
+    setEditData({ ...profile });
+    setIsEditing(false);
+    setError('');
+  };
+
   const handleCancelAppointment = async (appointmentId: string) => {
     try {
       await api.delete(`/appointments/${appointmentId}`);
       fetchAppointments();
+      setSuccess('Cita cancelada correctamente');
+      setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
       console.error('Error cancelling appointment:', error);
       setError('Error al cancelar la cita');
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'var(--color-acento-dorado)';
+      case 'completed': return '#4CAF50';
+      case 'cancelled': return '#F44336';
+      case 'pending': return '#FF9800';
+      default: return 'var(--color-texto-secundario)';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'Confirmada';
+      case 'completed': return 'Completada';
+      case 'cancelled': return 'Cancelada';
+      case 'pending': return 'Pendiente';
+      default: return 'Pendiente';
+    }
+  };
+
+  // Calcular estadísticas
+  const totalAppointments = appointments.length;
+  const upcomingAppointments = appointments.filter(apt => 
+    apt.status === 'confirmed' || apt.status === 'pending'
+  ).length;
+  const completedAppointments = appointments.filter(apt => 
+    apt.status === 'completed'
+  ).length;
+
   if (loading) {
     return (
-      <div className="min-h-screen admin-panel py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h2 className="text-xl sm:text-2xl font-semibold" style={{ color: 'var(--color-texto-principal)' }}>Cargando...</h2>
-          </div>
+      <div className="profile-container">
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Cargando perfil...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen admin-panel">
-      <div className="dashboard-content">
-        <div className="text-center px-4">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl" style={{ fontFamily: 'var(--fuente-titulos)', color: 'var(--color-texto-principal)' }}>
-            Mi Perfil
-          </h1>
-          <p className="mt-3 max-w-2xl mx-auto text-lg sm:text-xl px-4" 
-             style={{ color: 'var(--color-texto-secundario)', fontFamily: 'var(--fuente-cuerpo)' }}>
-            Actualiza tu información personal
-          </p>
+    <div className="profile-container">
+      {/* Messages */}
+      {error && (
+        <div className={`message error`}>
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className={`message success`}>
+          {success}
+        </div>
+      )}
+
+      <div className="profile-layout">
+        {/* Profile Header */}
+        <div className="profile-header">
+          <div className="avatar-section">
+            <div className="avatar">
+              <User size={48} color="var(--color-fondo-oscuro)" />
+            </div>
+            <h1 className="user-name">{profile.name || 'Usuario'}</h1>
+            <span className="user-role">{user?.role || 'Cliente'}</span>
+          </div>
+
+          <div className="profile-stats">
+            <div className="stat-item">
+              <div className="stat-number">{totalAppointments}</div>
+              <div className="stat-label">Citas Totales</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">{upcomingAppointments}</div>
+              <div className="stat-label">Próximas</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">{completedAppointments}</div>
+              <div className="stat-label">Completadas</div>
+            </div>
+          </div>
         </div>
 
-        {error && (
-          <div className="mt-4 mx-4 sm:mx-0 bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="mt-4 mx-4 sm:mx-0 bg-green-900 border border-green-700 text-green-100 px-4 py-3 rounded">
-            {success}
-          </div>
-        )}
-
-        <div className="mt-8 sm:mt-12 px-4 sm:px-0">
-          <div className="card">
-            <div className="px-4 py-5 sm:p-6">
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                <div>
-                  <label htmlFor="name" className="label">
-                    Nombre completo
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      value={profile.name}
-                      onChange={handleChange}
-                      required
-                      className="input"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="label">
-                    Correo electrónico
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      value={profile.email}
-                      onChange={handleChange}
-                      required
-                      className="input"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="label">
-                    Teléfono
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="tel"
-                      name="phone"
-                      id="phone"
-                      value={profile.phone}
-                      onChange={handleChange}
-                      className="input"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="address" className="label">
-                    Dirección
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      type="text"
-                      name="address"
-                      id="address"
-                      value={profile.address}
-                      onChange={handleChange}
-                      className="input"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <button
-                    type="submit"
-                    className="btn btn-primary w-full flex justify-center"
-                  >
-                    Actualizar Perfil
+        {/* Profile Info */}
+        <div className="profile-info">
+          <div className="info-header">
+            <h2 className="section-title">
+              <User size={24} />
+              Mi Perfil
+            </h2>
+            <div>
+              {isEditing ? (
+                <>
+                  <button className="cancel-button" onClick={handleCancel}>
+                    <X size={16} />
+                    Cancelar
                   </button>
+                  <button className="edit-button" onClick={handleSave}>
+                    <Save size={16} />
+                    Guardar
+                  </button>
+                </>
+              ) : (
+                <button className="edit-button" onClick={() => setIsEditing(true)}>
+                  <Edit3 size={16} />
+                  Editar Perfil
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="form-grid">
+            <div className="form-group">
+              <label className="form-label">
+                <User size={16} />
+                Nombre completo
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Ingresa tu nombre completo"
+                />
+              ) : (
+                <div className="info-display">
+                  <User size={16} color="var(--color-acento-dorado)" />
+                  <span className="info-text">{profile.name || 'No especificado'}</span>
                 </div>
-              </form>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">
+                <Mail size={16} />
+                Correo electrónico
+              </label>
+              {isEditing ? (
+                <input
+                  type="email"
+                  className="form-input"
+                  value={editData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="correo@ejemplo.com"
+                />
+              ) : (
+                <div className="info-display">
+                  <Mail size={16} color="var(--color-acento-dorado)" />
+                  <span className="info-text">{profile.email}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">
+                <Phone size={16} />
+                Teléfono
+              </label>
+              {isEditing ? (
+                <input
+                  type="tel"
+                  className="form-input"
+                  value={editData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="+57 300 123 4567"
+                />
+              ) : (
+                <div className="info-display">
+                  <Phone size={16} color="var(--color-acento-dorado)" />
+                  <span className={`${!profile.phone ? 'info-placeholder' : ''} info-text`}>
+                    {profile.phone || 'No especificado'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">
+                <MapPin size={16} />
+                Dirección
+              </label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  placeholder="Calle 123 #45-67, Ciudad"
+                />
+              ) : (
+                <div className="info-display">
+                  <MapPin size={16} color="var(--color-acento-dorado)" />
+                  <span className={`${!profile.address ? 'info-placeholder' : ''} info-text`}>
+                    {profile.address || 'No especificada'}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* User Profile Section */}
-        <div className="card mt-6 mx-4 sm:mx-0">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4" style={{ color: 'var(--color-texto-principal)', fontFamily: 'var(--fuente-titulos)' }}>Perfil de Usuario</h2>
-          {user && (
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-medium" style={{ color: 'var(--color-texto-secundario)' }}>Nombre</h3>
-                <p className="mt-1" style={{ color: 'var(--color-texto-principal)' }}>{user.name}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium" style={{ color: 'var(--color-texto-secundario)' }}>Email</h3>
-                <p className="mt-1" style={{ color: 'var(--color-texto-principal)' }}>{user.email}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium" style={{ color: 'var(--color-texto-secundario)' }}>Rol</h3>
-                <p className="mt-1 capitalize" style={{ color: 'var(--color-texto-principal)' }}>{user.role}</p>
-              </div>
-            </div>
-          )}
+      {/* Appointments Section */}
+      <div className="appointments-section">
+        <div className="appointments-header">
+          <h2 className="section-title">
+            <Calendar size={24} />
+            Mis Citas
+          </h2>
         </div>
 
-        {/* Appointments Section */}
-        <div className="card mx-4 sm:mx-0">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4" style={{ color: 'var(--color-texto-principal)', fontFamily: 'var(--fuente-titulos)' }}>Mis Citas</h2>
-          {error && (
-            <div className="bg-red-900 border-l-4 border-red-700 p-4 mb-4">
-              <p style={{ color: 'var(--color-texto-principal)' }}>{error}</p>
-            </div>
-          )}
-          <div className="space-y-4">
-            {appointments.map((appointment) => (
-              <div
-                key={appointment._id}
-                className="border rounded-lg p-4 hover:shadow-md transition-shadow"
-                style={{ borderColor: 'var(--color-border)' }}
+        <div className="appointments-grid">
+          {appointments.length > 0 ? (
+            appointments.map(appointment => (
+              <div 
+                key={appointment._id} 
+                className="appointment-card"
+                style={{ 
+                  '--status-color': getStatusColor(appointment.status)
+                } as React.CSSProperties}
               >
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
-                  <div className="flex-1">
-                    <h3 className="text-base sm:text-lg font-medium" style={{ color: 'var(--color-texto-principal)' }}>
-                      {appointment.service}
-                    </h3>
-                    <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
-                      {format(new Date(appointment.date), "PPP 'a las' HH:mm", { locale: es })}
-                    </p>
-                    <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
-                      Duración: {appointment.duration} minutos
-                    </p>
-                    <p className="text-sm" style={{ color: 'var(--color-texto-secundario)' }}>
-                      {user?.role === 'client' ? 'Barbero' : 'Cliente'}:{' '}
-                      {user?.role === 'client'
-                        ? appointment.barber.name
-                        : appointment.client.name}
-                    </p>
+                <div className="appointment-header">
+                  <div className="appointment-date-time">
+                    <div className="appointment-date">
+                      {format(new Date(appointment.date), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
+                    </div>
+                    <div className="appointment-time">
+                      <Clock size={14} />
+                      {appointment.time}
+                    </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full text-center ${
-                        appointment.status === 'confirmed'
-                          ? 'bg-green-100 text-green-800'
-                          : appointment.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : appointment.status === 'cancelled'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {appointment.status === 'confirmed' && 'Confirmada'}
-                      {appointment.status === 'pending' && 'Pendiente'}
-                      {appointment.status === 'cancelled' && 'Cancelada'}
-                      {appointment.status === 'completed' && 'Completada'}
-                    </span>
-                    {appointment.status === 'pending' && (
-                      <button
-                        onClick={() => handleCancelAppointment(appointment._id)}
-                        className="btn-danger text-sm w-full sm:w-auto"
-                      >
-                        Cancelar
-                      </button>
-                    )}
+                  <div 
+                    className="appointment-status"
+                    style={{ 
+                      backgroundColor: getStatusColor(appointment.status) + '20',
+                      color: getStatusColor(appointment.status),
+                      border: `1px solid ${getStatusColor(appointment.status)}`
+                    }}
+                  >
+                    {getStatusText(appointment.status)}
                   </div>
                 </div>
+
+                <div className="appointment-details">
+                  <div className="detail-item">
+                    <span className="detail-label">Servicio</span>
+                    <span className="detail-value">
+                      <Scissors size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                      {appointment.service}
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">{user?.role === 'client' ? 'Barbero' : 'Cliente'}</span>
+                    <span className="detail-value">
+                      {user?.role === 'client' 
+                        ? (typeof appointment.barber === 'string' ? appointment.barber : appointment.barber?.name || 'No especificado')
+                        : (appointment.client?.name || 'No especificado')
+                      }
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Hora</span>
+                    <span className="detail-value">{appointment.time}</span>
+                  </div>
+                </div>
+
+                {appointment.status === 'pending' && (
+                  <div style={{ marginTop: '16px', textAlign: 'right' }}>
+                    <button
+                      onClick={() => handleCancelAppointment(appointment._id)}
+                      className="cancel-appointment-btn"
+                    >
+                      Cancelar Cita
+                    </button>
+                  </div>
+                )}
               </div>
-            ))}
-            {appointments.length === 0 && (
-              <p className="text-center py-4" style={{ color: 'var(--color-texto-secundario)' }}>
-                No tienes citas programadas
-              </p>
-            )}
-          </div>
+            ))
+          ) : (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '48px 24px',
+              color: 'var(--color-texto-secundario)',
+              fontSize: '18px'
+            }}>
+              No tienes citas programadas
+            </div>
+          )}
         </div>
       </div>
     </div>
